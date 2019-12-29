@@ -1,20 +1,13 @@
-import uuidv4 from 'uuid/v4'
-
 export default function reducer(state, action) {
   switch (action.type) {
+    case 'GET_TODOS':
+      return {
+        ...state,
+        todos: action.payload
+      }
+
     case 'ADD_TODO':
-      if (!action.payload) {
-        return state
-      }
-      if (state.todos.findIndex(todo => todo.text === action.payload) > -1) {
-        return state
-      }
-      const newTodo = {
-        id: uuidv4(),
-        text: action.payload,
-        complete: false,
-      }
-      const addedTodos = [...state.todos, newTodo]
+      const addedTodos = [...state.todos, action.payload]
       return { ...state, todos: addedTodos }
 
     case 'SET_CURRENT_TODO':
@@ -26,7 +19,7 @@ export default function reducer(state, action) {
     case 'TOGGLE_TODO':
       const toggledTodos = state.todos.map(function(todo) {
         return todo.id === action.payload.id
-          ? { ...action.payload, complete: !action.payload.complete }
+          ? { ...todo, ...action.payload }
           : todo
       })
       return { ...state, todos: toggledTodos }
@@ -34,7 +27,7 @@ export default function reducer(state, action) {
     case 'UPDATE_TODO':
       const updatedTodo = {
         ...state.currentTodo,
-        text: action.payload,
+        ...action.payload,
       }
       const updatedTodoIndex = state.todos.findIndex(function(todo) {
         return todo.id === state.currentTodo.id

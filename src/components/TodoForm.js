@@ -1,30 +1,51 @@
 import React, { useState, useContext, useEffect } from 'react'
+import axios from 'axios'
+import uuidv4 from 'uuid/v4'
 import TodosContext from '../context'
 
 export default function TodoForm() {
   const [todo, setTodo] = useState('')
-  const {
-    state: { currentTodo },
-    dispatch,
-  } = useContext(TodosContext)
+  const { state, dispatch } = useContext(TodosContext)
 
   useEffect(
     function() {
-      if (currentTodo.text) {
-        setTodo(currentTodo.text)
+      if (state.currentTodo.text) {
+        setTodo(state.currentTodo.text)
       } else {
         setTodo('')
       }
     },
-    [currentTodo.text, setTodo]
+    [state.currentTodo.text, setTodo]
   )
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
-    if (currentTodo.text) {
-      dispatch({ type: 'UPDATE_TODO', payload: todo })
+    if (state.currentTodo.text) {
+      const response = await axios.patch(
+        `https://hooks-api.siegblink.now.sh/todos/${state.currentTodo.id}`,
+        {
+          text: todo,
+        }
+      )
+      dispatch({ type: 'UPDATE_TODO', payload: response.data })
     } else {
-      dispatch({ type: 'ADD_TODO', payload: todo })
+      if (!todo) {
+        return state
+      }
+      if (
+        state.todos.findIndex(someTodo => someTodo.text === todo.payload) > -1
+      ) {
+        return state
+      }
+      const reponse = await axios.post(
+        'https://hooks-api.siegblink.now.sh/todos',
+        {
+          id: uuidv4(),
+          text: todo,
+          complete: false,
+        }
+      )
+      dispatch({ type: 'ADD_TODO', payload: reponse.data })
     }
     setTodo('')
   }
