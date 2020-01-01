@@ -33,7 +33,7 @@ export default function TodoForm() {
         return state
       }
       if (
-        state.todos.findIndex(someTodo => someTodo.text === todo.payload) > -1
+        state.todos.findIndex(someTodo => someTodo.text === todo) > -1
       ) {
         return state
       }
