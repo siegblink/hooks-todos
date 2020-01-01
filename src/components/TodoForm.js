@@ -37,7 +37,7 @@ export default function TodoForm() {
       ) {
         return state
       }
-      const reponse = await axios.post(
+      const response = await axios.post(
         'https://hooks-api.siegblink.now.sh/todos',
         {
           id: uuidv4(),
@@ -45,7 +45,7 @@ export default function TodoForm() {
           complete: false,
         }
       )
-      dispatch({ type: 'ADD_TODO', payload: reponse.data })
+      dispatch({ type: 'ADD_TODO', payload: response.data })
     }
     setTodo('')
   }
